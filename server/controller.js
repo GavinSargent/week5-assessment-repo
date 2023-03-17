@@ -226,15 +226,43 @@ module.exports = {
             ('Yemen'),
             ('Zambia'),
             ('Zimbabwe');
-        `).then(() => {
+        `)
+        .then(() => {
             console.log('DB seeded!')
             res.sendStatus(200)
-        }).catch(err => console.log('error seeding DB', err))
+        })
+        .catch(err => console.log('error seeding DB', err))
     },
 
     getCountries: (req, res) => {
         sequelize.query(`
             SELECT * FROM countries
+        `)
+        .then((dbRes) => {
+            res.status(200).send(dbRes[0])
+         })
+         .catch(err => console.log(err))
+    },
+
+    createCity: (req, res) => {
+        const { name, rating, countryId} = req.body
+
+        sequelize.query(`
+            INSERT INTO cities (name, rating, country_Id)
+            VALUES ('${name}', ${rating}, ${countryId})
+        `)
+        .then((dbRes) => {
+            res.status(200).send(dbRes[0])
+         })
+         .catch(err => console.log(err))
+    },
+
+    getCities: (req, res) => {
+        sequelize.query(`
+            SELECT cities.city_id, cities.name AS city, cities.rating, countries.country_id, countries.name AS country
+            FROM cities
+            JOIN countries
+            ON cities.country_id = countries.country_id
         `)
         .then((dbRes) => {
             res.status(200).send(dbRes[0])
